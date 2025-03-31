@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "name": "Tech Corp",
+    "imageUrl": "https://picsum.photos/id/20/400/600"
+  },
+  {
+    "id": 2,
+    "name": "InnovateX",
+    "imageUrl": "https://picsum.photos/id/36/400/600"
+  },
+  {
+    "id": 3,
+    "name": "Green Solutions",
+    "imageUrl": "https://picsum.photos/id/48/400/600"
+  }
+]
