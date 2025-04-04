@@ -10,7 +10,7 @@ const JobListings = () => {
     useEffect(() => {
         const fetchJobs = async () => {
             try {
-                const response = await api.get('/api/jobs');
+                const response = await api.get('/jobs');
                 // console.log('Full response:', response);
                 if (response.data && response.data.jobs) {
                     setJobs(response.data.jobs);

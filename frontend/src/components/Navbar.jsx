@@ -1,67 +1,117 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import './Navbar.css';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+    AppBar,
+    Toolbar,
+    Typography,
+    Button,
+    Box,
+    IconButton,
+    Menu,
+    MenuItem
+} from '@mui/material';
+import { AccountCircle } from '@mui/icons-material';
+import { logout } from '../store/authSlice';
 
 const Navbar = () => {
     const navigate = useNavigate();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const dispatch = useDispatch();
+    const { isAuthenticated, user } = useSelector((state) => state.auth);
+    const [anchorEl, setAnchorEl] = React.useState(null);
 
-    useEffect(() => {
-        // Check authentication status when component mounts and when token changes
-        const checkAuth = () => {
-            const token = localStorage.getItem('token');
-            setIsAuthenticated(!!token);
-        };
+    const handleMenu = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
 
-        checkAuth();
-        // Add event listener for storage changes
-        window.addEventListener('storage', checkAuth);
-        
-        // Custom event listener for auth changes
-        window.addEventListener('authChange', checkAuth);
-
-        return () => {
-            window.removeEventListener('storage', checkAuth);
-            window.removeEventListener('authChange', checkAuth);
-        };
-    }, []);
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
+        // Clear localStorage
         localStorage.removeItem('userId');
-        setIsAuthenticated(false);
-        // Dispatch auth change event
-        window.dispatchEvent(new Event('authChange'));
+        localStorage.removeItem('userType');
+        
+        dispatch(logout());
+        handleClose();
         navigate('/login');
     };
 
     return (
-        <nav className="navbar">
-            <div className="navbar-container">
-                <Link to="/" className="navbar-brand">
+        <AppBar position="static">
+            <Toolbar>
+                <Typography
+                    variant="h6"
+                    component="div"
+                    sx={{ flexGrow: 1, cursor: 'pointer' }}
+                    onClick={() => navigate('/')}
+                >
                     Job Portal
-                </Link>
-                <div className="nav-links">
-                    <Link to="/" className="nav-link">Home</Link>
-                    <Link to="/jobs" className="nav-link">Jobs</Link>
-                    <Link to="/companies" className="nav-link">Companies</Link>
-                    <Link to="/about" className="nav-link">About</Link>
-                    <Link to="/contact" className="nav-link">Contact</Link>
-                </div>
-                <div className="auth-links">
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     {isAuthenticated ? (
-                        <button onClick={handleLogout} className="nav-link logout-btn">
-                            Logout
-                        </button>
+                        <>
+                            {user?.type === 'admin' ? (
+                                <>
+                                    <Button color="inherit" onClick={() => navigate('/admin/users')}>
+                                        Manage Users
+                                    </Button>
+                                    <Button color="inherit" onClick={() => navigate('/add-job')}>
+                                        Add Job
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <Button color="inherit" onClick={() => navigate('/jobs')}>
+                                        Jobs
+                                    </Button>
+                                    <Button color="inherit" onClick={() => navigate('/companies')}>
+                                        Companies
+                                    </Button>
+                                </>
+                            )}
+                            <IconButton
+                                size="large"
+                                aria-label="account of current user"
+                                aria-controls="menu-appbar"
+                                aria-haspopup="true"
+                                onClick={handleMenu}
+                                color="inherit"
+                            >
+                                <AccountCircle />
+                            </IconButton>
+                            <Menu
+                                id="menu-appbar"
+                                anchorEl={anchorEl}
+                                anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                open={Boolean(anchorEl)}
+                                onClose={handleClose}
+                            >
+                                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                            </Menu>
+                        </>
                     ) : (
                         <>
-                            <Link to="/login" className="nav-link">Login</Link>
-                            <Link to="/register" className="nav-link register">Register</Link>
+                            <Button color="inherit" onClick={() => navigate('/login')}>
+                                Login
+                            </Button>
+                            <Button color="inherit" onClick={() => navigate('/register')}>
+                                Register
+                            </Button>
                         </>
                     )}
-                </div>
-            </div>
-        </nav>
+                </Box>
+            </Toolbar>
+        </AppBar>
     );
 };
 

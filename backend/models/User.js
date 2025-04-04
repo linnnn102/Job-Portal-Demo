@@ -17,6 +17,14 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Password is required.'],
         minlength: [8, 'Password must be at least 8 characters long.'],
     },
+    type: {
+        type: String,
+        required: [true, 'User type is required.'],
+        enum: {
+            values: ['admin', 'employee'],
+            message: 'User type must be either "admin" or "employee".'
+        }
+    },
     imageUrl: {
         type: String,
     },

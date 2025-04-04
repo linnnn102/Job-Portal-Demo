@@ -4,13 +4,14 @@ const connectDB = require('./config/db');
 const swaggerDocs = require('./swagger');
 const cors = require('cors');
 const { initializeJobs } = require('./controllers/jobController');
+const { getAllUsers } = require('./controllers/userController');
 
 dotenv.config();
 const app = express();
 
 // CORS Middleware
 app.use(cors({
-    origin: ['http://localhost:5004'], // Allow requests from React frontend ports
+    origin: ['http://localhost:3000', 'http://localhost:5004'], // Allow requests from React frontend ports
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
 }));
@@ -24,9 +25,13 @@ const imageRoutes = require('./routes/imageRoutes');
 const jobRoutes = require('./routes/jobRoutes');
 
 // Mount routes
-app.use('/api/auth', userRoutes);
+app.use('/user', userRoutes);
 app.use('/api/user', imageRoutes);
-app.use('/api/jobs', jobRoutes);
+app.use('/create', jobRoutes);
+app.use('/jobs', jobRoutes);
+
+// Special route for getting all users
+app.get('/users', getAllUsers);
 
 // Connect to MongoDB
 connectDB().then(() => {
@@ -58,8 +63,9 @@ swaggerDocs(app, PORT);
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log('Available routes:');
-    console.log('- POST /api/auth/login - Login user');
-    console.log('- POST /api/auth/register - Register new user');
+    console.log('- POST /user/create - Create new user');
+    console.log('- POST /user/login - Login user');
+    console.log('- GET /users - Get all users');
     console.log('- GET /api/jobs - Get all jobs');
     console.log('- POST /api/jobs/create - Create a new job');
 });

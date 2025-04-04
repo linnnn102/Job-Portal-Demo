@@ -8,11 +8,16 @@ const {
 
 // Create a new user
 const createUser = async (req, res) => {
-    const { fullName, email, password } = req.body;
+    const { fullName, email, password, type } = req.body;
 
     // Basic input validations
-    if (!fullName || !email || !password) {
+    if (!fullName || !email || !password || !type) {
         return res.status(400).json({ error: 'Validation failed: All fields are required.' });
+    }
+
+    // Validate user type
+    if (!['admin', 'employee'].includes(type)) {
+        return res.status(400).json({ error: 'Validation failed: User type must be either "admin" or "employee".' });
     }
 
     // Validate full name (only alphabets and spaces)
@@ -44,6 +49,7 @@ const createUser = async (req, res) => {
             fullName,
             email,
             password: hashedPassword,
+            type
         });
         await user.save();
         res.status(201).json({ message: 'User created successfully.' });
@@ -119,15 +125,29 @@ const loginUser = async (req, res) => {
             return res.status(400).json({ message: 'Invalid user' });
         }
 
+        console.log('Found user:', { 
+            id: user._id, 
+            email: user.email, 
+            type: user.type 
+        });
+
         // Check password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ message: 'Invalid password' });
         }
 
-        // If password matches, generate token or respond with success
-        res.status(200).json({ message: 'Login successful', userId: user._id });
+        // If password matches, respond with success and user info
+        const response = {
+            message: 'Login successful',
+            userId: user._id,
+            userType: user.type
+        };
+        
+        console.log('Sending response:', response);
+        res.status(200).json(response);
     } catch (err) {
+        console.error('Login error:', err);
         res.status(500).send('Server error');
     }
 };

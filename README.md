@@ -1,6 +1,6 @@
 # Job Portal Application
 
-A modern job portal application built with React frontend and Node.js backend, featuring user authentication, job listings, and company showcases.
+A modern job portal application built with React frontend and Node.js backend, featuring user authentication, role-based access control, job listings, and company showcases.
 
 ## Project Setup
 
@@ -55,56 +55,37 @@ npm start
 ```
 The frontend will run on http://localhost:5004
 
-## Folder Structure
+## User Roles
 
-```
-/job-portal
-├── /backend
-│   ├── /config
-│   │   └── db.js         # MongoDB connection configuration
-│   ├── /controllers
-│   │   ├── imageController.js  # Authentication logic
-│   │   ├── userController.js   # Authentication logic
-│   │   └── jobController.js   # Job-related operations
-│   ├── /data
-│   │   └── companies.json # Sample company data
-│   ├── /models
-│   │   ├── User.js       # User schema and model
-│   │   └── Job.js        # Job schema and model
-│   ├── /routes
-│   │   ├── imageRoutes.js # Image routes
-│   │   ├── userRoutes.js # User authentication routes
-│   │   ├── sw.js # Swagger routes
-│   │   └── jobRoutes.js  # Job-related routes
-│   ├── /utils
-│   │   ├── validatorsImg.js       # Image validation
-│   │   └── validatorsUser.js        # User validation
-│   ├── server.js         # Main backend server
-│   └── .env              # Environment variables
-│
-├── /frontend
-│   ├── /public
-│   │   └── index.html    # Main HTML file
-│   ├── /src
-│   │   ├── /components
-│   │   │   ├── Navbar.jsx
-│   │   │   └── PrivateRoute.jsx
-│   │   ├── /pages
-│   │   │   ├── Home.jsx
-│   │   │   ├── About.jsx
-│   │   │   ├── Contact.jsx
-│   │   │   ├── Login.jsx
-│   │   │   ├── JobListings.jsx
-│   │   │   ├── CompanyShowcase.jsx
-│   │   │   └── *.css     # CSS styles
-│   │   ├── /services
-│   │   │   └── api.js    # API configuration
-│   │   ├── App.js       # Main React component
-│   │   └── index.jsx    # Application entry point
-│   ├── package.json
-│   └── .env              # Frontend environment variables
-└── README.md
-```
+The application supports two types of users:
+
+### Admin Users
+- Can manage users
+- Can create new job listings
+- Access to admin dashboard
+- Can view all job listings
+
+### Employee Users
+- Can view job listings
+- Can apply for jobs
+- Access to company showcase
+
+## API Endpoints
+
+### Authentication
+- `POST /user/create` - Register new user
+- `POST /user/login` - User login
+- `GET /users` - Get all users (Admin only)
+
+### Jobs
+- `GET /jobs` - Get all job listings (Employee access)
+- `POST /create/job` - Create new job listing (Admin access)
+
+### Companies
+- `GET /api/companies` - Get company information
+
+### Images
+- `POST /api/user/uploadImage` - Upload user profile image
 
 ## Navigation
 
@@ -114,47 +95,13 @@ The frontend will run on http://localhost:5004
 - `/contact` - Contact page
 - `/login` - Login page
 
-### Protected Routes (Requires Authentication)
+### Protected Routes (Employee)
 - `/jobs` - Job listings page
 - `/companies` - Company showcase page
 
-## Key Functionalities
-
-### Authentication
-- User registration
-- User login with JWT authentication
-- Protected routes
-- Session management
-
-### Job Management
-- View all job listings
-- Detailed job information display
-- Job search and filtering
-- Job application process
-
-### Company Showcase
-- Company profiles display
-- Company information
-- Company-specific job listings
-
-### User Interface
-- Responsive design
-- Modern and intuitive navigation
-- Interactive job cards
-- Dynamic content loading
-
-### API Endpoints
-
-#### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - User login
-
-#### Jobs
-- `GET /api/jobs` - Get all job listings
-- `POST /api/jobs/create` - Create new job listing
-
-#### Companies
-- `GET /api/companies` - Get company information
+### Protected Routes (Admin)
+- `/admin/users` - User management
+- `/add-job` - Create new job listing
 
 ## Technologies Used
 - Frontend: React.js
@@ -165,7 +112,8 @@ The frontend will run on http://localhost:5004
 - API: RESTful
 
 ## Development
-- The application uses modern React practices including hooks and functional components
+- Role-based access control (RBAC)
+- Modern React practices including hooks and functional components
 - RESTful API architecture
 - Secure authentication with JWT
 - Responsive design for all screen sizes
